@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Maa Ambe Jewellers</title>
+  
+  <!-- Three.js Library for 3D View -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- Supabase JS Client -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    /* Global Styles */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background-color: #0f0f0f;
+      color: #f0f0f0;
+      overflow-x: hidden;
+    }
+
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+    }
+    .modal-box {
+      background: #1a1a1a;
+      border: 1px solid #D4AF37;
+      border-radius: 8px;
+      padding: 24px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
+      text-align: center;
+    }
+    .modal-box h2 {
+      color: #D4AF37;
+      margin-bottom: 8px;
+    }
+    .modal-box p {
+      color: #aaa;
+      font-size: 0.9rem;
+      margin-bottom: 16px;
+    }
+    .input-field {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      background: #2a2a2a;
+      border: 1px solid #444;
+      color: #fff;
+      border-radius: 4px;
+      outline: none;
+    }
+    .input-field:focus {
+      border-color: #D4AF37;
+    }
+    .btn-gold-action {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(135deg, #D4AF37, #AA7C11);
+      border: none;
+      color: #000;
+      font-weight: bold;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: 0.2s;
+    }
+    .btn-gold-action:hover {
+      opacity: 0.9;
+    }
+
+    /* Header & Layout */
+    header {
+      background: #141414;
+      border-bottom: 1px solid #333;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .brand-logo {
+      color: #D4AF37;
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+    .nav-icons {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+    .badge-count {
+      background: #D4AF37;
+      color: #000;
+      border-radius: 50%;
+      padding: 2px 6px;
+      font-size: 0.75rem;
+      font-weight: bold;
+    }
+
+    /* Controls Section */
+    .controls-bar {
+      padding: 15px 20px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      background: #181818;
+    }
+    .search-input, .select-sort {
+      padding: 8px 12px;
+      background: #252525;
+      border: 1px solid #444;
+      color: #fff;
+      border-radius: 4px;
+    }
+
+    /* Product Grid */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+    .product-card {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 6px;
+      padding: 12px;
+      position: relative;
+      transition: 0.3s;
+    }
+    .product-card:hover {
+      border-color: #D4AF37;
+    }
+    .img-container {
+      width: 100%;
+      height: 180px;
+      overflow: hidden;
+      border-radius: 4px;
+    }
+    .product-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .card-wishlist-icon {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      cursor: pointer;
+      z-index: 2;
+    }
+    .icon-svg {
+      width: 24px;
+      height: 24px;
+      fill: rgba(255,255,255,0.4);
+    }
+    .icon-svg.active-wishlist {
+      fill: #ff4d4d;
+    }
+    .price {
+      color: #D4AF37;
+      font-weight: bold;
+      margin: 5px 0;
+    }
+    .mudra-tag {
+      font-size: 0.8rem;
+      color: #888;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      position: fixed;
+      top: 0;
+      right: -300px;
+      width: 280px;
+      height: 100%;
+      background: #141414;
+      border-left: 1px solid #333;
+      z-index: 999;
+      padding: 20px;
+      transition: 0.3s;
+    }
+    .sidebar.active {
+      right: 0;
+    }
+    .close-btn {
+      color: #fff;
+      font-size: 1.5rem;
+      cursor: pointer;
+      float: right;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- AUTH MODAL (Form tag removed to prevent submit freeze) -->
+  <div id="authModal" class="modal-overlay">
+    <div class="modal-box">
+      <h2>Welcome to Maa Ambe Jewellers</h2>
+      <p>Sign in to browse our exclusive jewelry collections.</p>
+
+      <div>
+        <input type="text" id="userNameInput" class="input-field" placeholder="Full Name" required>
+        <input type="tel" id="userContactInput" class="input-field" placeholder="Contact Number (+91...)" required>
+        
+        <button type="button" class="btn-gold-action" onclick="handleSignup(event)">Enter Store</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN APP CONTAINER -->
+  <div id="mainApp" style="display: none;">
+    
+    <!-- HEADER -->
+    <header>
+      <div class="brand-logo">Maa Ambe Jewellers</div>
+      <div class="nav-icons">
+        <span>Wishlist: <span id="wishlist-count" class="badge-count">0</span></span>
+        <span>Cart: <span id="cart-count" class="badge-count">0</span></span>
+        <button onclick="toggleSidebar()" style="background:none; border:none; color:#D4AF37; cursor:pointer;">Menu ☰</button>
+      </div>
+    </header>
+
+    <!-- CONTROLS BAR -->
+    <div class="controls-bar">
+      <input type="text" id="searchInput" class="search-input" placeholder="Search Jewelry..." onkeyup="filterProducts()">
+      <select id="sortPrice" class="select-sort" onchange="sortProducts()">
+        <option value="default">Sort By Price</option>
+        <option value="low-high">Low to High</option>
+        <option value="high-low">High to Low</option>
+      </select>
+      <button class="btn-gold-action" style="width:auto; margin:0;" onclick="filterCategory('all')">All</button>
+      <button class="btn-gold-action" style="width:auto; margin:0; background:#333; color:#fff;" onclick="filterCategory('women')">Women</button>
+      <button class="btn-gold-action" style="width:auto; margin:0; background:#333; color:#fff;" onclick="filterCategory('men')">Men</button>
+    </div>
+
+    <!-- LIVE USER COUNTER BANNER -->
+    <div style="padding: 10px 20px; background: #111; font-size: 0.85rem; color: #888;">
+      Live Shoppers Online: <span id="live-users" style="color: #D4AF37; font-weight: bold;">125</span>
+    </div>
+
+    <!-- PRODUCT CATALOG GRID -->
+    <div id="productGrid" class="product-grid"></div>
+
+  </div>
+
+  <!-- SIDEBAR MENU -->
+  <div id="sidebar" class="sidebar">
+    <span class="close-btn" onclick="toggleSidebar()">&times;</span>
+    <h3 style="color:#D4AF37; margin-top: 20px;">User Profile</h3>
+    <p style="margin-top: 10px;">Name: <span id="sidebar-user-name">-</span></p>
+    <p style="margin-top: 5px;">Member ID: <span id="user-member-id">-</span></p>
+
+    <hr style="border-color:#333; margin:15px 0;">
+
+    <button class="btn-gold-action" onclick="showUserDetailsModal()">Show My Details</button>
+    <button class="btn-gold-action" style="background:#333; color:#fff;" onclick="showMyOrdersModal()">My Orders</button>
+    <button class="btn-gold-action" style="background:#ff4d4d; color:#fff;" onclick="handleLogout()">Logout</button>
+  </div>
+
+  <!-- USER DETAILS MODAL -->
+  <div id="userModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <h2>Profile Overview</h2>
+      <p>Name: <span id="profile-name"></span></p>
+      <p>Contact: <span id="profile-contact"></span></p>
+      <p>Member ID: <span id="profile-id"></span></p>
+      <p>Mudra Balance: <span id="profile-mudra"></span></p>
+      <p>Active Session: <span id="session-time">0</span>s</p>
+      <button class="btn-gold-action" onclick="closeUserModal()">Close</button>
+    </div>
+  </div>
+
+  <!-- MY ORDERS MODAL -->
+  <div id="myOrdersModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box" style="max-width: 500px;">
+      <h2>My Order Requests</h2>
+      <div id="ordersListContainer" style="max-height: 300px; overflow-y: auto; text-align: left; margin: 15px 0;"></div>
+      <button class="btn-gold-action" onclick="closeOrdersModal()">Close</button>
+    </div>
+  </div>
+
+  <!-- HD VIEW MODAL -->
+  <div id="imageModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <img id="hdModalImage" src="" style="width:100%; border-radius:4px;" alt="Product">
+      <h3 id="hdModalTitle" style="color:#D4AF37; margin-top:10px;"></h3>
+      <p id="hdModalPrice" class="price"></p>
+      <p id="hdModalMudra" class="mudra-tag"></p>
+      <button id="modalBookBtn" class="btn-gold-action">Book Now</button>
+      <button class="btn-gold-action" style="background:#444; color:#fff;" onclick="closeImageModal()">Close</button>
+    </div>
+  </div>
+
+  <!-- CHECKOUT / BOOKING MODAL -->
+  <div id="bookingCheckoutModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <div id="checkoutStep1">
+        <h2>Confirm Reservation</h2>
+        <p>Item: <strong id="checkoutProdName" style="color:#fff;"></strong></p>
+        <p class="price" id="checkoutProdPrice"></p>
+        <p style="color:#888; font-size:0.85rem;">Booking Reward: <span id="checkoutMudraCredit" style="color:#D4AF37;"></span> Mudra Gold</p>
+        <button class="btn-gold-action" onclick="executeSureBooking()">Confirm Booking</button>
+        <button class="btn-gold-action" style="background:#444; color:#fff;" onclick="closeCheckoutModal()">Cancel</button>
+      </div>
+      <div id="checkoutStep2" style="display:none;">
+        <h2 style="color:#4BB543;">Booking Requested!</h2>
+        <p>Our team will verify and confirm your booking shortly.</p>
+        <button class="btn-gold-action" onclick="closeCheckoutModal()">Done</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3D VIEW MODAL -->
+  <div id="3dModal" class="modal-overlay" style="display:none;">
+    <div class="modal-box">
+      <h2>Interactive 3D View</h2>
+      <div id="three-container" style="width:100%; height:300px; margin:10px 0;"></div>
+      <button class="btn-gold-action" onclick="close3DModal()">Close 3D View</button>
+    </div>
+  </div>
+
+  <!-- Custom JavaScript File -->
+  <script src="app.js"></script>
+</body>
+                           </html>
+                           

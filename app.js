@@ -378,3 +378,54 @@ setInterval(() => {
 
 console.log('Royal Collection Loaded with Supabase Integration');
     
+// ==========================================
+// CANCEL ORDER FUNCTIONALITY
+// ==========================================
+
+// Update My Orders Modal to show Cancel Button
+function showMyOrdersModal() {
+  const container = document.getElementById('ordersListContainer');
+  if (currentUser.orders.length === 0) {
+    container.innerHTML = "No orders requested yet.";
+  } else {
+    container.innerHTML = currentUser.orders.map(o => `
+      <div style="background:#222; padding:12px; margin:8px 0; border-radius:6px; display:flex; justify-between; align-items:center; border:1px solid #333;">
+        <div>
+          <p><strong>Order ID:</strong> ${o.orderId}</p>
+          <p><strong>Item:</strong> ${o.productName}</p>
+          <p><strong>Price:</strong> ₹${o.price.toLocaleString()}</p>
+          <p><strong>Status:</strong> <span style="color:#D4AF37;">${o.status}</span></p>
+        </div>
+        <button class="btn-gold-action" style="background:#ff4d4d; color:#fff; padding:6px 12px; font-size:0.8rem; margin-left:10px;" onclick="cancelOrder('${o.orderId}')">Cancel Order</button>
+      </div>
+    `).join('');
+  }
+  document.getElementById('myOrdersModal').style.display = 'flex';
+}
+
+// Function to handle order cancellation in Supabase & Local UI
+async function cancelOrder(orderId) {
+  if (!confirm("Are you sure you want to cancel this order?")) return;
+
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session) return;
+
+  // Delete order from Supabase Table
+  const { error } = await supabase
+    .from('orders')
+    .delete()
+    .eq('order_id', orderId)
+    .eq('user_id', session.user.id);
+
+  if (error) {
+    alert("Error cancelling order: " + error.message);
+  } else {
+    // Remove from local array
+    currentUser.orders = currentUser.orders.filter(o => o.orderId !== orderId);
+    
+    // Refresh Modal UI
+    showMyOrdersModal();
+    alert("Order cancelled successfully!");
+    logDeveloperEvent(`CANCELLED ORDER: ${orderId} by ${currentUser.memberId}`);
+  }
+}

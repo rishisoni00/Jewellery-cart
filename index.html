@@ -19,9 +19,8 @@
       </div>
     </div>
 
-    <!-- Active Buyers Announcement -->
     <div class="announcement">
-      <span>Live Active Buyers: <strong id="live-users">146</strong></span>
+  
     </div>
 
     <!-- Navbar -->
@@ -33,7 +32,7 @@
             <circle cx="50" cy="50" r="42" stroke="#D4AF37" stroke-width="4" fill="none"/>
             <path d="M50 20 L80 80 L65 80 L50 48 L35 80 L20 80 Z" fill="#D4AF37"/>
           </svg>
-          <span class="logo-text">AURA JEWELS</span>
+          <span class="logo-text">AMBE ALANKAAR</span>
         </div>
       </div>
 
@@ -88,7 +87,7 @@
         <ul class="sidebar-menu">
           <li class="menu-option-btn" onclick="showUserDetailsModal()">👤 Show My Details</li>
           <li class="menu-option-btn" onclick="showMyOrdersModal()">📦 My Orders</li>
-          <li class="menu-option-btn" onclick="toggleAdminPanel()">🛠️ Admin Control Panel</li>
+          <li class="menu-option-btn" onclick="()"></li>
           <li class="menu-option-btn" onclick="filterCategory('all')">🛍️ All Products</li>
           <li class="menu-option-btn" onclick="filterCategory('men')">🕺 Men's Collection</li>
           <li class="menu-option-btn" onclick="filterCategory('women')">💃 Women's Collection</li>
@@ -111,7 +110,7 @@
     <footer class="royal-footer">
       <div class="ticker-wrap">
         <div class="ticker">
-          ✨ Royal Heritage Craftsmanship • Certified Pure 24K Gold • Handcrafted Diamond Jewelry • Exclusive Mudra Rewards on Every Purchase ✨
+          ✨ Traditional Heritage Craftsmanship • Certified Pure 24K Gold • Handcrafted Diamond Jewelry • Exclusive Mudra Rewards on Every Purchase ✨
         </div>
       </div>
       <div class="bottom-welcome">
@@ -189,26 +188,6 @@
       </div>
     </div>
 
-    <!-- Admin Control Panel Drawer -->
-    <div id="adminPanel" class="admin-panel">
-      <div class="admin-header">
-        <h3>Admin Control Panel</h3>
-        <span class="close-sidebar" onclick="toggleAdminPanel()">&times;</span>
-      </div>
-      <div class="admin-body">
-        <h4>Add New Product</h4>
-        <input type="text" id="newProdName" placeholder="Product Name">
-        <input type="number" id="newProdPrice" placeholder="Price (INR)">
-        <input type="text" id="newProdCat" placeholder="Category (men/women)">
-        <input type="text" id="newProdImg" placeholder="Image URL">
-        <input type="number" id="newProdMudra" placeholder="Fixed Mudra Reward">
-        <button onclick="addNewProduct()" class="btn-gold-action">Add to Catalog</button>
-        
-        <hr><br>
-        <h4>Server Logs & Analytics</h4>
-        <div id="developerAnalyticsLog" class="developer-log-box"></div>
-      </div>
-    </div>
 
     <div id="buyer-toast" class="toast"></div>
 

@@ -11,7 +11,7 @@ let currentUser = {
   mudraGold: 0,
   mudraSilver: 0,
   wishlist: [],
-  tray: [],
+  cart: [],
   orders: []
 };
 
@@ -61,7 +61,7 @@ function updateUserUI() {
   document.getElementById('mudra-gold').innerText = currentUser.mudraGold;
   document.getElementById('profile-mudra').innerText = `${currentUser.mudraGold} Gold`;
   document.getElementById('wishlist-count').innerText = currentUser.wishlist.length;
-  document.getElementById('tray-count').innerText = currentUser.tray.length;
+  document.getElementById('tray-count').innerText = currentUser.cart.length;
 }
 
 function displayProducts(items) {
@@ -134,9 +134,9 @@ function toggleWishlist(id) {
 }
 
 function addToCart(id) {
-  currentUser.tray.push(id);
+  currentUser.cart.push(id);
   updateUserUI();
-  alert("Item added to tray!");
+  alert("Item added to cart!");
 } 
 
 function initiateBooking(id) {

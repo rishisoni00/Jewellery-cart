@@ -62,13 +62,12 @@ body {
 }
 
 /* Active Buyers Header Bar */
-.announcement {
+ {
   background: #D4AF37;
   color: #000;
-  text-align: center;
   padding: 8px;
   font-weight: bold;
-  font-size: 0.9rem;
+  font-size: 0.0rem;
 }
 
 /* Fix Navbar Alignment */
@@ -434,27 +433,6 @@ body {
   justify-content: center;
   margin: 15px auto;
   font-weight: bold;
-}
-
-/* Admin Panel */
-.admin-panel {
-  display: none;
-  position: fixed;
-  right: 0; top: 0; width: 320px; height: 100%;
-  background: #111;
-  border-left: 1px solid var(--primary-gold);
-  padding: 20px;
-  z-index: 10000;
-  overflow-y: auto;
-}
-
-.admin-panel input {
-  width: 100%;
-  margin: 6px 0;
-  padding: 8px;
-  background: #222;
-  border: 1px solid #444;
-  color: #fff;
 }
 
 .developer-log-box {

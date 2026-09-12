@@ -81,7 +81,7 @@ function displayProducts(items) {
         <p class="mudra-tag">Reward: ${p.mudraReward} Mudra Gold</p>
         <p class="price">₹${p.price.toLocaleString()}</p>
         <button class="btn-gold-action" onclick="event.stopPropagation(); initiateBooking(${p.id})">Book Now</button>
-        <button class="btn-gold-action" style="background:#444; color:#fff" onclick="event.stopPropagation(); addToCart(${p.id})">Cart</button>
+        <button class="btn-gold-action" style="background:#444; color:#fff" onclick="event.stopPropagation(); add to tray (${p.id})">tray</button>
         <button class="btn-gold-action" style="background:#222; color:#D4AF37" onclick="event.stopPropagation(); open3D()">View</button>
       </div>
     `;
@@ -132,9 +132,9 @@ function toggleWishlist(id) {
 }
 
 function addToCart(id) {
-  currentUser.cart.push(id);
+  currentUser.tray.push(id);
   updateUserUI();
-  alert("Item added to cart!");
+  alert("Item added to tray!");
 } 
 
 function initiateBooking(id) {
@@ -165,7 +165,7 @@ function executeSureBooking() {
   document.getElementById('checkoutStep1').style.display = 'none';
   document.getElementById('checkoutStep2').style.display = 'block';
 
-  logDeveloperEvent(`BOOKING: User ${currentUser.memberId} requested ${pendingBookingProduct.name}. Credit: ${halfReward} Mudra`);
+  logDeveloperEvent(`BOOKING: User ${currentUser.memberId} requested ${pendingBookingProduct.name}. Credit: ${noReward} Mudra`);
 }
 
 function closeCheckoutModal() {
@@ -212,27 +212,6 @@ function showMyOrdersModal() {
 
 function closeOrdersModal() {
   document.getElementById('myOrdersModal').style.display = 'none';
-}
-
-function toggleAdminPanel() {
-  const panel = document.getElementById('adminPanel');
-  panel.style.display = (panel.style.display === 'block') ? 'none' : 'block';
-}
-
-function addNewProduct() {
-  const name = document.getElementById('newProdName').value;
-  const price = Number(document.getElementById('newProdPrice').value);
-  const category = document.getElementById('newProdCat').value;
-  const img = document.getElementById('newProdImg').value;
-  const mudraReward = Number(document.getElementById('newProdMudra').value);
-
-  if (name && price && category && img) {
-    const newProd = { id: products.length + 1, name, price, category, img, mudraReward: mudraReward || 20 };
-    products.push(newProd);
-    displayProducts(products);
-    toggleAdminPanel();
-    alert('Product added to catalog!');
-  }
 }
 
 function filterProducts() {
@@ -292,7 +271,7 @@ setInterval(() => {
 }, 3000);
 
 // No signup logic - clean file
-console.log('Royal Collection Loaded');
+console.log('jewellery Collection Loaded');
 // No signup logic - clean file
-console.log('Royal Collection Loaded');
+console.log('jewellery Collection Loaded');
 c

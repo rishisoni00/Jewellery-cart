@@ -43,7 +43,7 @@ window.addEventListener('DOMContentLoaded', () => {
   const savedUser = localStorage.getItem('aura_user');
   if (savedUser) {
     currentUser = JSON.parse(savedUser);
-    document.getElementById('authModal').style.display = 'none';
+  
     document.getElementById('mainApp').style.display = 'block';
     updateUserUI();
     displayProducts(products);
@@ -59,7 +59,7 @@ function updateUserUI() {
   document.getElementById('mudra-gold').innerText = currentUser.mudraGold;
   document.getElementById('profile-mudra').innerText = `${currentUser.mudraGold} Gold`;
   document.getElementById('wishlist-count').innerText = currentUser.wishlist.length;
-  document.getElementById('tray-count').innerText = currentUser.cart.length;
+  document.getElementById('tray-count').innerText = currentUser.tray.length;
 }
 
 function displayProducts(items) {

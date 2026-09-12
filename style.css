@@ -15,7 +15,7 @@
 }
 
 body {
-  background-color: var(#562f19);
+  background-color: var(--dark-bg);
   color: var(--text-light);
   overflow-x: hidden;
 }

@@ -12,6 +12,7 @@ let currentUser = {
   mudraSilver: 0,
   wishlist: [],
   cart: [],
+  tray: [],
   orders: []
 };
 
@@ -71,7 +72,7 @@ function displayProducts(items) {
       <div class="product-card" onclick="openHDView('${p.img}', '${p.name}', ${p.price}, ${p.id}, ${p.mudraReward})">
         <div class="card-wishlist-icon" onclick="event.stopPropagation(); toggleWishlist(${p.id})">
           <svg class="icon-svg ${isWishlisted ? 'active-wishlist' : ''}" viewBox="0 0 24 24">
-            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"[...]
           </svg>
         </div>
         <div class="img-container">
@@ -81,7 +82,7 @@ function displayProducts(items) {
         <p class="mudra-tag">Reward: ${p.mudraReward} Mudra Gold</p>
         <p class="price">₹${p.price.toLocaleString()}</p>
         <button class="btn-gold-action" onclick="event.stopPropagation(); initiateBooking(${p.id})">Book Now</button>
-        <button class="btn-gold-action" style="background:#444; color:#fff" onclick="event.stopPropagation(); add to tray (${p.id})">tray</button>
+        <button class="btn-gold-action" style="background:#444; color:#fff" onclick="event.stopPropagation(); addToCart(${p.id})">tray</button>
         <button class="btn-gold-action" style="background:#222; color:#D4AF37" onclick="event.stopPropagation(); open3D()">View</button>
       </div>
     `;
@@ -165,7 +166,7 @@ function executeSureBooking() {
   document.getElementById('checkoutStep1').style.display = 'none';
   document.getElementById('checkoutStep2').style.display = 'block';
 
-  logDeveloperEvent(`BOOKING: User ${currentUser.memberId} requested ${pendingBookingProduct.name}. Credit: ${noReward} Mudra`);
+  logDeveloperEvent(`BOOKING: User ${currentUser.memberId} requested ${pendingBookingProduct.name}. Credit: ${halfReward} Mudra`);
 }
 
 function closeCheckoutModal() {
@@ -265,13 +266,126 @@ function close3DModal() {
   document.getElementById('3dModal').style.display = 'none';
 }
 
+// Payment Section Functions
+function openPaymentSection() {
+  document.getElementById('paymentSectionModal').style.display = 'flex';
+  displayPaymentProducts();
+}
+
+function closePaymentSection() {
+  document.getElementById('paymentSectionModal').style.display = 'none';
+}
+
+function displayPaymentProducts() {
+  const container = document.getElementById('paymentProducts');
+  container.innerHTML = '';
+  products.forEach(p => {
+    container.innerHTML += `
+      <div style="background:#1a1a1a; padding:10px; margin:5px 0; border-radius:3px; display:flex; justify-content:space-between; align-items:center;">
+        <div>
+          <p style="color:#D4AF37; font-weight:bold;">${p.name}</p>
+          <p style="color:#999; font-size:0.9em;">₹${p.price.toLocaleString()}</p>
+        </div>
+        <button class="btn-gold-action" style="padding:5px 10px; font-size:0.9em;" onclick="addProductToPayment(${p.id})">Add</button>
+      </div>
+    `;
+  });
+}
+
+function addProductToPayment(id) {
+  const product = products.find(p => p.id === id);
+  if (!currentUser.cart) currentUser.cart = [];
+  currentUser.cart.push(product);
+  updatePaymentUI();
+}
+
+function updatePaymentUI() {
+  const selectedList = document.getElementById('selectedItemsList');
+  const totalAmount = document.getElementById('totalPaymentAmount');
+  
+  if (currentUser.cart.length === 0) {
+    selectedList.innerHTML = '<p style="color:#999;">No items selected</p>';
+    totalAmount.innerText = '₹0';
+  } else {
+    let total = 0;
+    selectedList.innerHTML = currentUser.cart.map((item, index) => {
+      total += item.price;
+      return `
+        <div style="display:flex; justify-content:space-between; color:#ccc; font-size:0.9em; margin-bottom:5px;">
+          <span>${item.name}</span>
+          <span>₹${item.price.toLocaleString()}</span>
+        </div>
+      `;
+    }).join('');
+    totalAmount.innerText = '₹' + total.toLocaleString();
+  }
+}
+
+function proceedToRazorpay() {
+  if (currentUser.cart.length === 0) {
+    alert('Please select products first');
+    return;
+  }
+  
+  const totalAmount = currentUser.cart.reduce((sum, item) => sum + item.price, 0);
+  
+  const options = {
+    key: "rzp_test_1DP5ibUg0xrxPF", // Replace with your actual Razorpay Key ID
+    amount: totalAmount * 100, // Convert to paise
+    currency: "INR",
+    name: "Maa Ambe Jewellers",
+    description: "Jewelry Purchase",
+    customer_id: currentUser.memberId,
+    prefill: {
+      name: currentUser.name,
+      contact: currentUser.contact
+    },
+    theme: { 
+      color: "#D4AF37" 
+    },
+    handler: function(response) {
+      alert('Payment Successful! Payment ID: ' + response.razorpay_payment_id);
+      logDeveloperEvent(`PAYMENT SUCCESS: ${response.razorpay_payment_id} | Amount: ₹${totalAmount}`);
+      currentUser.cart = [];
+      updatePaymentUI();
+      closePaymentSection();
+    },
+    modal: {
+      ondismiss: function() {
+        logDeveloperEvent(`PAYMENT CANCELLED by user`);
+      }
+    }
+  };
+  
+  const rzp = new Razorpay(options);
+  rzp.open();
+}
+
+function openWishlistModal() {
+  if (currentUser.wishlist.length === 0) {
+    alert('Your wishlist is empty');
+    return;
+  }
+  const wishlistProducts = products.filter(p => currentUser.wishlist.includes(p.id));
+  alert('Wishlist Items:\n' + wishlistProducts.map(p => `${p.name} - ₹${p.price.toLocaleString()}`).join('\n'));
+}
+
+function opentrayModal() {
+  if (currentUser.tray.length === 0) {
+    alert('Your tray is empty');
+    return;
+  }
+  const trayProducts = currentUser.tray.map(id => products.find(p => p.id === id));
+  alert('Tray Items:\n' + trayProducts.map(p => `${p.name} - ₹${p.price.toLocaleString()}`).join('\n'));
+}
+
 setInterval(() => {
   const liveUsers = Math.floor(Math.random() * (160 - 110 + 1)) + 110;
-  document.getElementById('live-users').innerText = liveUsers;
+  const liveUsersElement = document.getElementById('live-users');
+  if (liveUsersElement) {
+    liveUsersElement.innerText = liveUsers;
+  }
 }, 3000);
 
 // No signup logic - clean file
 console.log('jewellery Collection Loaded');
-// No signup logic - clean file
-console.log('jewellery Collection Loaded');
-c

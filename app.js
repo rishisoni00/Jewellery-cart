@@ -23,8 +23,6 @@ let pendingBookingProduct = null;
 
 function handleSignup(event) {
   event.preventDefault();
-  const name = document.getElementById('userNameInput').value;
-  const contact = document.getElementById('userContactInput').value;
   const generatedId = 'AUR-' + Math.floor(100000 + Math.random() * 900000);
   
   currentUser.memberId = generatedId;

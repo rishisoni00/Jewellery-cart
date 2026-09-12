@@ -6,6 +6,7 @@
   <title>Maa Ambe Jewellers | Royal Collection</title>
   <link rel="stylesheet" href="style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 </head>
 <body>
 
@@ -44,12 +45,12 @@
         </select>
         
         <button id="wishlistBtn" class="interactive-btn" onclick="openWishlistModal()">
-          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="#D4AF37"/>
           Wishlist (<span id="wishlist-count">0</span>)
         </button>
 
         <button id="trayBtn" class="interactive-btn" onclick="opentrayModal()">
-          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+          <svg class="icon-svg" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.02-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49A1.003 1.003 0 0020.01 4H4.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z" fill="#D4AF37"/>
           cart (<span id="tray-count">0</span>)
         </button>
       </div>
@@ -58,7 +59,7 @@
     <!-- Google Style Dedicated Sub-Header Search Bar -->
     <div class="search-bar-section">
       <div class="search-input-wrapper">
-        <svg class="search-icon-svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+        <svg class="search-icon-svg" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79h1.5l5.01 5.01-.49.49h-.99l5.01 5.01 1.41-1.41L19.92 21v-.99h.79l.49-.49.01-.01c0 0 0 0 0 0l-5.01-5.01zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" fill="#D4AF37"/>
         <input type="text" id="searchInput" placeholder="Search Gold, Diamond, Rings..." onkeyup="filterProducts()">
       </div>
     </div>
@@ -87,7 +88,7 @@
         <ul class="sidebar-menu">
           <li class="menu-option-btn" onclick="showUserDetailsModal()"> 👤 Show My Details</li>
           <li class="menu-option-btn" onclick="showMyOrdersModal()">📦 My Orders</li>
-          <li class="menu-option-btn" onclick="()"></li>
+          <li class="menu-option-btn" onclick="openPaymentSection()">💳 Payment & Checkout</li>
           <li class="menu-option-btn" onclick="filterCategory('all')">🛍️ All Products</li>
           <li class="menu-option-btn" onclick="filterCategory('men')">🕺 Men's Collection</li>
           <li class="menu-option-btn" onclick="filterCategory('women')">💃 Women's Collection</li>
@@ -155,6 +156,38 @@
       </div>
     </div>
 
+    <!-- Payment Section Modal -->
+    <div id="paymentSectionModal" class="modal">
+      <div class="modal-content" style="max-width: 500px;">
+        <span class="close" onclick="closePaymentSection()">&times;</span>
+        <h3>💳 Razorpay Payment Checkout</h3>
+        <hr><br>
+        
+        <div id="paymentProducts" style="max-height: 250px; overflow-y: auto; border: 1px solid #D4AF37; padding: 10px; margin-bottom: 15px; border-radius: 5px; background: #1a1a1a;">
+          <p style="color: #999; text-align: center; font-size: 0.9em;">Select products to add to cart</p>
+        </div>
+
+        <div id="selectedItems" style="background: #222; padding: 10px; border-radius: 5px; margin-bottom: 15px; max-height: 200px; overflow-y: auto;">
+          <h4 style="color: #D4AF37; margin-bottom: 10px;">Selected Items:</h4>
+          <div id="selectedItemsList" style="color: #ccc; font-size: 0.9em;">
+            <p style="color: #999;">No items selected</p>
+          </div>
+        </div>
+
+        <div style="background: #222; padding: 15px; border-radius: 5px; border: 1px solid #D4AF37; margin-bottom: 15px;">
+          <p><strong style="color: #D4AF37;">Total Amount:</strong> <span id="totalPaymentAmount" style="font-size: 1.2em; color: #D4AF37;">₹0</span></p>
+          <p style="font-size: 0.9em; color: #999;">Tax included (if applicable)</p>
+        </div>
+
+        <button class="btn-gold-action" onclick="proceedToRazorpay()" style="width: 100%; margin-bottom: 10px;">
+          🔒 Proceed to Razorpay Payment
+        </button>
+        <button class="btn-gold-action" style="background: #444; width: 100%;" onclick="closePaymentSection()">
+          Cancel
+        </button>
+      </div>
+    </div>
+
     <!-- 3D View Modal -->
     <div id="3dModal" class="modal">
       <div class="modal-content">
@@ -198,4 +231,4 @@
 
   <script src="app.js"></script>
 </body>
-  </html>
+</html>

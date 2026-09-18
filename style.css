@@ -15,7 +15,7 @@
 }
 
 body {
-  background-color: var(emerald green-bg);
+  background-color: var(emerald green);
   color: var(--text-light);
   overflow-x: hidden;
 }

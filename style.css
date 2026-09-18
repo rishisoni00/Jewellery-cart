@@ -1,7 +1,7 @@
 :root {
   --primary-gold: #D4AF37;
   --gold-hover: #F3E5AB;
-  --dark-bg: #0A0A0A;
+  --dark-bg: #800000;
   --card-bg: #151515;
   --text-light: #F5F5F5;
   --border-color: #2A2A2A;
@@ -15,7 +15,7 @@
 }
 
 body {
-  background-color: var(emerald green);
+  background-color: var(#800000);
   color: var(--text-light);
   overflow-x: hidden;
 }
